@@ -51,9 +51,41 @@ try{
 }
 catch(error){
     res.status(500).json({
-       message: 'error creating user'
+      error: 'error creating user'
     })
 }
 })
+//get registered users
+app.get('/register' ,async (req ,res)=>{
+   try{ 
+    const users = await user.find()
+    res.status(201).json(users)
 
+}catch(error){
+    res.status(500).json({
+        error: 'user not found'
+    })
+}
+})
+//get login
+app.post('/login',async ( req,res)=>{
+    try{
+        const{username,password}= req.body
+        const user = await user.findOne({username})
+        if(!user){
+            return res.status(401).json({
+                error:'user not found'
+            })
+            
+        }
+        const isPasswordValid = await bcrypt.compare(password,user.password)
+        if(!isPasswordValid){
+            return res.status(401).json({
+                error:'invalid password'
+            })
+        }
+        
+    }
+
+})
 
