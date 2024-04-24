@@ -5,7 +5,7 @@ const bodyParser = require('body-parser')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const user = require('./models/userSchema')
-
+  const SECRET_KEY='secretkey'
 
 // connect to express app
 const app = express()
@@ -63,7 +63,7 @@ app.get('/register' ,async (req ,res)=>{
 
 }catch(error){
     res.status(500).json({
-        error: 'user not found'
+        error: 'user already exites'
     })
 }
 })
@@ -71,21 +71,24 @@ app.get('/register' ,async (req ,res)=>{
 app.post('/login',async ( req,res)=>{
     try{
         const{username,password}= req.body
-        const user = await user.findOne({username})
-        if(!user){
-            return res.status(401).json({
-                error:'user not found'
-            })
-            
+        const foundUser = await user.findOne({username})
+        if(!foundUser){
+            return res.status(401).json({error:'user not found'})
         }
-        const isPasswordValid = await bcrypt.compare(password,user.password)
+        const isPasswordValid = await bcrypt.compare(password, foundUser.password)
         if(!isPasswordValid){
-            return res.status(401).json({
-                error:'invalid password'
-            })
-        }
+            return res.status(401).json({error:'invalid password'})
+            }
+            const token = jwt.sign({userId: foundUser._id},SECRET_KEY,{expiresIn:'1hr'})
+            res.json({message:' login successful' ,token})
         
-    }
+        
+        }catch(error){
+        res.status(500).json({
+          error: 'error loggin in'
+        })
+      }
+
 
 })
 
