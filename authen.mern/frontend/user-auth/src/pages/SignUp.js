@@ -8,6 +8,8 @@ const SignUp = () => {
 <label htmlFor="">Email</label>
 <br />
 <input  className='w-[400px] h-[40px] rounded-xl bg-zinc-700 p2' />
+<br />
+<br />
         </form>
       </div>
       <div>
